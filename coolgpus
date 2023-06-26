@@ -223,8 +223,8 @@ def assign(display, command):
 
 def set_speed(display, target):
     # toggle all fans
-    output = log_output(['nvidia-settings', '-q', 'fans', '-c', 'display'])
-    fans = int(re.search(r"^([0-9].*)\sFan", output.strip().split("\n")[0]).group(1))
+    output = log_output(["nvidia-smi", "-L"])
+    fans = len(output.splitlines())
 
     for fanId in range(fans):
         assign(display, f'[fan:{fanId}]/GPUTargetFanSpeed='+str(int(target)))
@@ -233,8 +233,8 @@ def manage_fans(displays):
     """Launches an X server for each GPU, then continually loops over the GPU fans to set their speeds according
     to the GPU temperature. When interrupted, it releases the fan control back to the driver and shuts down the
     X servers"""
-    output = log_output(['nvidia-settings', '-q', 'gpus', '-c', 'display'])
-    gpus = int(re.search(r"^([0-9].*)\sGPU", output.strip().split("\n")[0]).group(1))
+    output = log_output(["nvidia-smi", "-L"])
+    gpus = len(output.splitlines())
 
     try:
         # turn on all gpu fans speed control
